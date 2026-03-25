@@ -1,0 +1,829 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Minji Jang | Neuroscience Research</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Mono:wght@300;400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0d12;
+    --bg2: #0f1318;
+    --surface: #141921;
+    --border: #1e2733;
+    --accent1: #7eb8f7;   /* brain blue */
+    --accent2: #a8e6cf;   /* neural green */
+    --accent3: #f7c59f;   /* warm orange */
+    --accent4: #c9b8f7;   /* lavender */
+    --text: #e8edf5;
+    --muted: #6b7a8f;
+    --bright: #ffffff;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 300;
+    line-height: 1.7;
+    overflow-x: hidden;
+  }
+
+  /* ── NOISE OVERLAY ── */
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none; z-index: 1000; opacity: .4;
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 1.2rem 3rem;
+    background: rgba(10,13,18,.85);
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--border);
+  }
+  .nav-logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.1rem; color: var(--bright); letter-spacing: .04em;
+  }
+  .nav-links { display: flex; gap: 2rem; }
+  .nav-links a {
+    font-family: 'DM Mono', monospace; font-size: .75rem;
+    color: var(--muted); text-decoration: none; letter-spacing: .12em;
+    text-transform: uppercase; transition: color .2s;
+  }
+  .nav-links a:hover { color: var(--accent1); }
+
+  /* ── HERO ── */
+  .hero {
+    min-height: 100vh;
+    display: grid; grid-template-columns: 1fr 1fr;
+    align-items: center;
+    padding: 6rem 3rem 4rem;
+    position: relative; overflow: hidden;
+  }
+
+  /* animated neural network bg */
+  .hero-canvas {
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(ellipse 60% 80% at 70% 50%, rgba(126,184,247,.06) 0%, transparent 70%),
+      radial-gradient(ellipse 40% 60% at 20% 30%, rgba(168,230,207,.04) 0%, transparent 60%);
+  }
+
+  /* floating orbs */
+  .orb {
+    position: absolute; border-radius: 50%;
+    filter: blur(80px); animation: drift 12s ease-in-out infinite;
+  }
+  .orb1 { width: 400px; height: 400px; background: rgba(126,184,247,.07); top: -100px; right: 100px; animation-delay: 0s; }
+  .orb2 { width: 300px; height: 300px; background: rgba(168,230,207,.05); bottom: 0; right: 300px; animation-delay: -4s; }
+  .orb3 { width: 250px; height: 250px; background: rgba(201,184,247,.05); top: 30%; left: 40%; animation-delay: -8s; }
+
+  @keyframes drift {
+    0%, 100% { transform: translate(0,0) scale(1); }
+    33% { transform: translate(-20px, 30px) scale(1.05); }
+    66% { transform: translate(15px, -20px) scale(.95); }
+  }
+
+  .hero-left { position: relative; z-index: 2; }
+
+  .hero-tag {
+    display: inline-block;
+    font-family: 'DM Mono', monospace; font-size: .7rem;
+    color: var(--accent2); border: 1px solid rgba(168,230,207,.3);
+    padding: .35rem .8rem; border-radius: 2rem; letter-spacing: .15em;
+    text-transform: uppercase; margin-bottom: 1.5rem;
+    animation: fadeUp .6s ease both;
+  }
+
+  .hero-name {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2.8rem, 5vw, 4.5rem);
+    line-height: 1.1; color: var(--bright);
+    animation: fadeUp .6s .1s ease both;
+  }
+  .hero-name em { font-style: italic; color: var(--accent1); }
+
+  .hero-title {
+    font-family: 'DM Mono', monospace; font-size: .85rem;
+    color: var(--muted); letter-spacing: .08em;
+    margin-top: 1rem; margin-bottom: 1.5rem;
+    animation: fadeUp .6s .2s ease both;
+  }
+
+  .hero-bio {
+    font-size: .95rem; color: #8fa3bc; max-width: 520px;
+    animation: fadeUp .6s .3s ease both; line-height: 1.8;
+  }
+
+  .hero-ctas {
+    display: flex; gap: 1rem; margin-top: 2rem; flex-wrap: wrap;
+    animation: fadeUp .6s .4s ease both;
+  }
+
+  .btn {
+    display: inline-flex; align-items: center; gap: .5rem;
+    font-family: 'DM Mono', monospace; font-size: .78rem;
+    letter-spacing: .1em; text-transform: uppercase;
+    padding: .75rem 1.6rem; border-radius: .3rem;
+    text-decoration: none; transition: all .2s;
+  }
+  .btn-primary {
+    background: var(--accent1); color: var(--bg);
+  }
+  .btn-primary:hover { background: #a8d0ff; transform: translateY(-2px); }
+  .btn-outline {
+    border: 1px solid var(--border); color: var(--muted);
+  }
+  .btn-outline:hover { border-color: var(--accent1); color: var(--accent1); transform: translateY(-2px); }
+
+  /* hero right — stats */
+  .hero-right {
+    position: relative; z-index: 2;
+    display: flex; flex-direction: column; gap: 1rem;
+    padding-left: 4rem;
+    animation: fadeUp .6s .5s ease both;
+  }
+
+  .stat-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: .6rem; padding: 1.4rem 1.8rem;
+    display: flex; align-items: center; gap: 1.2rem;
+    transition: border-color .2s, transform .2s;
+  }
+  .stat-card:hover { border-color: var(--accent1); transform: translateX(4px); }
+  .stat-icon { font-size: 1.6rem; }
+  .stat-label { font-family: 'DM Mono', monospace; font-size: .7rem; color: var(--muted); text-transform: uppercase; letter-spacing: .1em; }
+  .stat-val { font-family: 'Playfair Display', serif; font-size: 1.6rem; color: var(--bright); }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ── SECTION WRAPPER ── */
+  section { padding: 6rem 3rem; }
+  .section-tag {
+    font-family: 'DM Mono', monospace; font-size: .7rem;
+    color: var(--accent2); letter-spacing: .2em; text-transform: uppercase;
+    margin-bottom: .8rem;
+  }
+  .section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2rem, 3.5vw, 3rem);
+    color: var(--bright); margin-bottom: 1rem;
+  }
+  .section-subtitle { color: var(--muted); max-width: 560px; margin-bottom: 3rem; font-size: .95rem; }
+
+  /* ── RESEARCH TOPICS ── */
+  #research { background: var(--bg2); }
+
+  .topics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .topic-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: .8rem; padding: 2rem;
+    position: relative; overflow: hidden;
+    transition: transform .25s, border-color .25s, box-shadow .25s;
+    cursor: default;
+  }
+  .topic-card::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; height: 3px;
+    border-radius: .8rem .8rem 0 0;
+    transition: opacity .25s;
+  }
+  .topic-card:hover { transform: translateY(-6px); box-shadow: 0 20px 60px rgba(0,0,0,.4); }
+
+  .tc1::before { background: linear-gradient(90deg, var(--accent1), var(--accent4)); }
+  .tc2::before { background: linear-gradient(90deg, var(--accent2), var(--accent1)); }
+  .tc3::before { background: linear-gradient(90deg, var(--accent3), var(--accent2)); }
+  .tc1:hover { border-color: rgba(126,184,247,.4); }
+  .tc2:hover { border-color: rgba(168,230,207,.4); }
+  .tc3:hover { border-color: rgba(247,197,159,.4); }
+
+  .topic-num {
+    font-family: 'DM Mono', monospace; font-size: .7rem;
+    color: var(--muted); letter-spacing: .2em; margin-bottom: 1rem;
+  }
+  .topic-icon { font-size: 2rem; margin-bottom: .8rem; }
+  .topic-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.4rem; color: var(--bright); margin-bottom: .8rem;
+  }
+  .topic-desc { color: var(--muted); font-size: .9rem; line-height: 1.7; margin-bottom: 1.5rem; }
+
+  .topic-tags { display: flex; flex-wrap: wrap; gap: .5rem; }
+  .tag {
+    font-family: 'DM Mono', monospace; font-size: .68rem;
+    padding: .3rem .7rem; border-radius: 2rem;
+    letter-spacing: .08em;
+  }
+  .tag-blue   { background: rgba(126,184,247,.12); color: var(--accent1); border: 1px solid rgba(126,184,247,.2); }
+  .tag-green  { background: rgba(168,230,207,.12); color: var(--accent2); border: 1px solid rgba(168,230,207,.2); }
+  .tag-orange { background: rgba(247,197,159,.12); color: var(--accent3); border: 1px solid rgba(247,197,159,.2); }
+  .tag-purple { background: rgba(201,184,247,.12); color: var(--accent4); border: 1px solid rgba(201,184,247,.2); }
+
+  /* ── PUBLICATIONS ── */
+  #publications { background: var(--bg); }
+
+  .pub-filter {
+    display: flex; gap: .75rem; flex-wrap: wrap; margin-bottom: 2.5rem;
+  }
+  .filter-btn {
+    font-family: 'DM Mono', monospace; font-size: .72rem;
+    letter-spacing: .1em; text-transform: uppercase;
+    padding: .5rem 1.2rem; border-radius: 2rem; cursor: pointer;
+    border: 1px solid var(--border); background: transparent;
+    color: var(--muted); transition: all .2s;
+  }
+  .filter-btn:hover, .filter-btn.active {
+    background: var(--accent1); color: var(--bg);
+    border-color: var(--accent1);
+  }
+
+  .pub-list { display: flex; flex-direction: column; gap: 1rem; }
+
+  .pub-item {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: .6rem; padding: 1.5rem 1.8rem;
+    display: grid; grid-template-columns: auto 1fr;
+    gap: 1.2rem; align-items: start;
+    transition: border-color .2s, transform .2s;
+  }
+  .pub-item:hover { border-color: var(--accent1); transform: translateX(4px); }
+  .pub-item[data-hidden="true"] { display: none; }
+
+  .pub-year {
+    font-family: 'DM Mono', monospace; font-size: .75rem;
+    color: var(--muted); width: 44px; padding-top: .15rem;
+  }
+  .pub-main {}
+  .pub-title {
+    font-size: .95rem; color: var(--bright); font-weight: 400;
+    margin-bottom: .4rem; line-height: 1.5;
+  }
+  .pub-authors { font-size: .82rem; color: var(--muted); margin-bottom: .5rem; }
+  .pub-authors strong { color: var(--accent2); font-weight: 500; }
+  .pub-journal { font-size: .8rem; font-style: italic; color: var(--accent1); }
+  .pub-badge {
+    display: inline-block;
+    font-family: 'DM Mono', monospace; font-size: .65rem;
+    padding: .2rem .6rem; border-radius: 1rem; margin-left: .6rem;
+    background: rgba(247,197,159,.15); color: var(--accent3);
+    border: 1px solid rgba(247,197,159,.25); vertical-align: middle;
+    font-style: normal;
+  }
+
+  /* ── METHODS ── */
+  #methods { background: var(--bg2); }
+
+  .methods-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+  }
+  .method-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: .6rem; padding: 1.4rem;
+    text-align: center;
+    transition: all .2s;
+  }
+  .method-card:hover {
+    border-color: rgba(126,184,247,.4);
+    transform: translateY(-4px);
+    box-shadow: 0 12px 40px rgba(0,0,0,.3);
+  }
+  .method-icon { font-size: 1.8rem; margin-bottom: .7rem; }
+  .method-name { font-size: .88rem; color: var(--text); font-weight: 400; }
+  .method-area { font-family: 'DM Mono', monospace; font-size: .68rem; color: var(--muted); margin-top: .3rem; }
+
+  /* ── TIMELINE ── */
+  #career { background: var(--bg); }
+
+  .timeline { position: relative; padding-left: 2rem; }
+  .timeline::before {
+    content: '';
+    position: absolute; left: 0; top: .6rem; bottom: 0;
+    width: 1px; background: var(--border);
+  }
+  .tl-item { position: relative; margin-bottom: 2rem; }
+  .tl-dot {
+    position: absolute; left: -2rem; top: .55rem;
+    width: 10px; height: 10px; border-radius: 50%;
+    background: var(--accent1); border: 2px solid var(--bg);
+    transform: translateX(-4px);
+    box-shadow: 0 0 0 3px rgba(126,184,247,.2);
+  }
+  .tl-date {
+    font-family: 'DM Mono', monospace; font-size: .7rem;
+    color: var(--accent1); letter-spacing: .1em; margin-bottom: .3rem;
+  }
+  .tl-role { font-weight: 500; color: var(--bright); margin-bottom: .2rem; }
+  .tl-place { color: var(--muted); font-size: .88rem; }
+
+  /* ── CONTACT ── */
+  #contact {
+    background: var(--bg2);
+    text-align: center;
+  }
+  .contact-links {
+    display: flex; justify-content: center; gap: 1.5rem; flex-wrap: wrap;
+    margin-top: 2rem;
+  }
+  .contact-link {
+    display: inline-flex; align-items: center; gap: .6rem;
+    font-family: 'DM Mono', monospace; font-size: .8rem;
+    letter-spacing: .08em; color: var(--muted);
+    text-decoration: none; padding: .9rem 1.6rem;
+    border: 1px solid var(--border); border-radius: .4rem;
+    transition: all .2s;
+  }
+  .contact-link:hover { border-color: var(--accent1); color: var(--accent1); transform: translateY(-3px); }
+
+  /* ── FOOTER ── */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 2rem 3rem;
+    display: flex; align-items: center; justify-content: space-between;
+    font-family: 'DM Mono', monospace; font-size: .72rem; color: var(--muted);
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 768px) {
+    nav { padding: 1rem 1.5rem; }
+    .nav-links { display: none; }
+    .hero { grid-template-columns: 1fr; padding: 7rem 1.5rem 4rem; }
+    .hero-right { padding-left: 0; }
+    section { padding: 4rem 1.5rem; }
+    footer { flex-direction: column; gap: 1rem; text-align: center; }
+  }
+
+  /* scroll reveal */
+  .reveal { opacity: 0; transform: translateY(24px); transition: opacity .6s, transform .6s; }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">Minji Jang</div>
+  <div class="nav-links">
+    <a href="#research">Research</a>
+    <a href="#publications">Publications</a>
+    <a href="#methods">Methods</a>
+    <a href="#career">Career</a>
+    <a href="#contact">Contact</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-canvas">
+    <div class="orb orb1"></div>
+    <div class="orb orb2"></div>
+    <div class="orb orb3"></div>
+  </div>
+
+  <div class="hero-left">
+    <span class="hero-tag">Postdoctoral Associate · Duke BME</span>
+    <h1 class="hero-name">Minji <em>Jang</em></h1>
+    <p class="hero-title">Ph.D. · Neuroscience &amp; Neural Circuit Research</p>
+    <p class="hero-bio">
+      Investigating neural mechanisms underlying social behavior, pain, and emotional regulation — from prefrontal circuits in adolescent rodents to sensory neuroscience of autism spectrum disorder.
+    </p>
+    <div class="hero-ctas">
+      <a href="#research" class="btn btn-primary">↓ Explore Research</a>
+      <a href="https://sites.google.com/view/minjijang-94/curriculum-vitae" class="btn btn-outline" target="_blank">View CV</a>
+    </div>
+  </div>
+
+  <div class="hero-right">
+    <div class="stat-card">
+      <div class="stat-icon">🧠</div>
+      <div>
+        <div class="stat-label">Current Focus</div>
+        <div class="stat-val" style="font-size:1.1rem; margin-top:.2rem;">Autism &amp; Social Behavior</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">📄</div>
+      <div>
+        <div class="stat-label">Publications</div>
+        <div class="stat-val" style="font-size:1.1rem; margin-top:.2rem;">7 <span style="font-size:.7rem; color:var(--muted); font-family:'DM Mono',monospace;">first-author</span></div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">🏛</div>
+      <div>
+        <div class="stat-label">Institution</div>
+        <div class="stat-val" style="font-size:1.1rem; margin-top:.2rem;">Duke University</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">📍</div>
+      <div>
+        <div class="stat-label">Lab</div>
+        <div class="stat-val" style="font-size:1.1rem; margin-top:.2rem;">Tim Dunn Lab</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- RESEARCH TOPICS -->
+<section id="research">
+  <div class="section-tag">Research Areas</div>
+  <h2 class="section-title">Three Pillars of<br>My Research</h2>
+  <p class="section-subtitle">My work spans three interconnected themes — each shedding light on how the brain shapes behavior in health and disease.</p>
+
+  <div class="topics-grid">
+
+    <!-- Topic 1 -->
+    <div class="topic-card tc1 reveal">
+      <div class="topic-num">01 ──</div>
+      <div class="topic-icon">🧠</div>
+      <h3 class="topic-title">Social &amp; Emotional Behavior</h3>
+      <p class="topic-desc">
+        How do adolescent brains regulate social, emotional, and addictive behaviors? Using the medial prefrontal cortex as a key node, I investigated how oxytocin modulates fear memory, anxiety, and sex-differential responses in adolescent rodents.
+      </p>
+      <div class="topic-tags">
+        <span class="tag tag-blue">mPFC</span>
+        <span class="tag tag-blue">Oxytocin</span>
+        <span class="tag tag-blue">Fear Memory</span>
+        <span class="tag tag-blue">Sex Differences</span>
+        <span class="tag tag-blue">Adolescence</span>
+        <span class="tag tag-blue">Social Buffering</span>
+      </div>
+    </div>
+
+    <!-- Topic 2 -->
+    <div class="topic-card tc2 reveal">
+      <div class="topic-num">02 ──</div>
+      <div class="topic-icon">⚡</div>
+      <h3 class="topic-title">Pain &amp; Sensory Circuits</h3>
+      <p class="topic-desc">
+        Characterizing direct synaptic connections between peripheral sensory and central neurons in orofacial pain (migraine/TMD) and psoriatic itch. I mapped IL-17R/ERK/TRPV4 and LPA/LPAR/PIEZO2 signaling pathways driving chronic pain states.
+      </p>
+      <div class="topic-tags">
+        <span class="tag tag-green">Migraine</span>
+        <span class="tag tag-green">Orofacial Pain</span>
+        <span class="tag tag-green">Psoriatic Itch</span>
+        <span class="tag tag-green">TRPV4</span>
+        <span class="tag tag-green">PIEZO2</span>
+        <span class="tag tag-green">TMD</span>
+      </div>
+    </div>
+
+    <!-- Topic 3 -->
+    <div class="topic-card tc3 reveal">
+      <div class="topic-num">03 ──</div>
+      <div class="topic-icon">🤝</div>
+      <h3 class="topic-title">Autism &amp; Social Enrichment</h3>
+      <p class="topic-desc">
+        My current postdoctoral work at Duke (Tim Dunn Lab) examines developmental changes associated with social enrichment and the neural mechanisms underlying social behavior in autism spectrum disorder — bridging behavioral and circuit-level analyses.
+      </p>
+      <div class="topic-tags">
+        <span class="tag tag-orange">ASD</span>
+        <span class="tag tag-orange">Social Enrichment</span>
+        <span class="tag tag-orange">Neural Development</span>
+        <span class="tag tag-orange">Behavior</span>
+        <span class="tag tag-orange">Duke BME</span>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- PUBLICATIONS -->
+<section id="publications">
+  <div class="section-tag">Selected Publications</div>
+  <h2 class="section-title">Published Work</h2>
+  <p class="section-subtitle">Filter by research theme to explore publications across topics.</p>
+
+  <div class="pub-filter">
+    <button class="filter-btn active" onclick="filterPubs('all', this)">All</button>
+    <button class="filter-btn" onclick="filterPubs('social', this)">Social &amp; Emotion</button>
+    <button class="filter-btn" onclick="filterPubs('pain', this)">Pain &amp; Sensory</button>
+    <button class="filter-btn" onclick="filterPubs('nicotine', this)">Nicotine</button>
+    <button class="filter-btn" onclick="filterPubs('review', this)">Under Review</button>
+    <button class="filter-btn" onclick="filterPubs('first', this)" style="border-color:rgba(168,230,207,.3); color:var(--accent2);">★ First Author</button>
+  </div>
+
+  <div class="pub-list" id="pubList">
+
+    <!-- 2026 accepted -->
+    <div class="pub-item reveal" data-topic="social" data-author="first">
+      <div class="pub-year">2026</div>
+      <div class="pub-main">
+        <div class="pub-title">Dexmedetomidine pre-injection attenuates fear response via prelimbic cortex modulation in an electric shock–induced PTSD adolescent rat model</div>
+        <div class="pub-authors">Seo, M., <strong>Jang, M.</strong>, Kim, S.-H., Park, Y.-S., &amp; Noh, J.</div>
+        <div class="pub-journal">Pharmacology, Biochemistry and Behavior <span class="pub-badge" style="background:rgba(168,230,207,.15);color:var(--accent2);border-color:rgba(168,230,207,.25);">Accepted</span></div>
+      </div>
+    </div>
+
+    <!-- Under review: Social buffering -->
+    <div class="pub-item reveal" data-topic="review" data-author="co">
+      <div class="pub-year">Under Review</div>
+      <div class="pub-main">
+        <div class="pub-title">Social buffering–mediated fear response modulation: investigating synaptic activity changes in the prelimbic cortex of the medial prefrontal cortex</div>
+        <div class="pub-authors">Seo, M., <strong>Jang, M.</strong>, Jung, T., Kim, J., &amp; Noh, J.</div>
+        <div class="pub-journal">Behavioural Brain Research <span class="pub-badge">Under Review</span></div>
+      </div>
+    </div>
+
+    <!-- Under review: LPA/LPAR -->
+    <div class="pub-item reveal" data-topic="pain" data-author="co">
+      <div class="pub-year">Under Review</div>
+      <div class="pub-main">
+        <div class="pub-title">LPA/LPAR signaling drives temporomandibular disorders-like pain through regulating the expression and sensitization of PIEZO2</div>
+        <div class="pub-authors">Zhang, Q., Su, S., Liang, P., Baldi, R., Wang, P., Dias, F. C., <strong>Jang, M.</strong>, Lim, P., Moreira, R. W. F., Yang, H., Chun, J., Guilak, F., Liedtke, W., Nackley, A., &amp; Chen, Y.</div>
+        <div class="pub-journal">Science Advances <span class="pub-badge">Under Review</span></div>
+      </div>
+    </div>
+
+    <!-- 2025 psoriatic itch -->
+    <div class="pub-item reveal" data-topic="pain" data-author="co">
+      <div class="pub-year">2025</div>
+      <div class="pub-main">
+        <div class="pub-title">Neuronal mechanisms of psoriatic itch: Role of IL-17R/ERK/TRPV4 signaling pathway</div>
+        <div class="pub-authors">Zhang, Q., <strong>Jang, M.</strong>, Dias, F. C., Zeng, Q., Wang, P., Tai, H., Chattha, E., Zhang, J. Y., Lim, R. S. P., Liedtke, W., &amp; Chen, Y.</div>
+        <div class="pub-journal">Journal of Investigative Dermatology</div>
+      </div>
+    </div>
+
+    <!-- 2022 oxytocin fear -->
+    <div class="pub-item reveal" data-topic="social" data-author="first" data-paperid="fdb85a5e16d06bb14f5902a41db4bfe1c5a9fd13">
+      <div class="pub-year">2022</div>
+      <div class="pub-main">
+        <div class="pub-title">Oxytocin modulation in the medial prefrontal cortex of pair-exposed rats during fear conditioning</div>
+        <div class="pub-authors"><strong>Jang, M.</strong>, Jung, T., Jeong, Y., Byun, Y., &amp; Noh, J.</div>
+        <div class="pub-journal">Psychoneuroendocrinology, 141, 105752 <span class="cite-count"></span></div>
+      </div>
+    </div>
+
+    <!-- 2021 oxytocin anxiogenic -->
+    <div class="pub-item reveal" data-topic="social" data-author="first" data-paperid="a9e0f0efb9f01e4ee17a5fbb262bc17c8e0f95e8">
+      <div class="pub-year">2021</div>
+      <div class="pub-main">
+        <div class="pub-title">Oxytocin-induced anxiogenic behavior in juvenile male rats</div>
+        <div class="pub-authors"><strong>Jang, M.</strong>, Jung, T., Kang, M., Kim, J., &amp; Noh, J.</div>
+        <div class="pub-journal">Animal Cells and Systems, 25(6), 369–376 <span class="cite-count"></span></div>
+      </div>
+    </div>
+
+    <!-- 2021 social buffering co-author -->
+    <div class="pub-item reveal" data-topic="social" data-author="co" data-paperid="2c3a89cbf5c1b7e48fc55e0af1b8f3f0c3c3b0f1">
+      <div class="pub-year">2021</div>
+      <div class="pub-main">
+        <div class="pub-title">Role of medial prefrontal cortical neurons and oxytocin modulation in the establishment of social buffering</div>
+        <div class="pub-authors">Jung, T., <strong>Jang, M.</strong>, &amp; Noh, J.</div>
+        <div class="pub-journal">Experimental Neurobiology, 30(1), 48 <span class="cite-count"></span></div>
+      </div>
+    </div>
+
+    <!-- 2020 nicotine maternal -->
+    <div class="pub-item reveal" data-topic="nicotine" data-author="first" data-paperid="c1e5b5d3c4f2a6e7b8d9e0f1a2b3c4d5e6f7a8b9">
+      <div class="pub-year">2020</div>
+      <div class="pub-main">
+        <div class="pub-title">Determining nicotine-related behavior changes in juvenile female rats through long-term maternal nicotine exposure</div>
+        <div class="pub-authors"><strong>Jang, M.</strong>, Jung, T., Kim, W., Kim, I., Jeong, Y., &amp; Noh, J.</div>
+        <div class="pub-journal">Behavioural Pharmacology, 31(1), 34–44 <span class="cite-count"></span></div>
+      </div>
+    </div>
+
+    <!-- 2019 dexmedetomidine sex -->
+    <div class="pub-item reveal" data-topic="social" data-author="first" data-paperid="b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1">
+      <div class="pub-year">2019</div>
+      <div class="pub-main">
+        <div class="pub-title">Sex differential effect of dexmedetomidine on fear memory extinction and anxiety behavior in adolescent rats</div>
+        <div class="pub-authors"><strong>Jang, M.</strong>, Jung, T., Kim, S.-H., &amp; Noh, J.</div>
+        <div class="pub-journal">Neuroscience Research, 149, 29–37 <span class="cite-count"></span></div>
+      </div>
+    </div>
+
+    <!-- 2019 nicotine recovery conference -->
+    <div class="pub-item reveal" data-topic="nicotine" data-author="first">
+      <div class="pub-year">2019</div>
+      <div class="pub-main">
+        <div class="pub-title">Recovery effects of dexmedetomidine against nicotine aversion reduction in rats exposed to early adolescent nicotine</div>
+        <div class="pub-authors"><strong>Jang, M.</strong>, Kim, S.-H., &amp; Noh, J.</div>
+        <div class="pub-journal">IBRO Reports, 6, S75–S76</div>
+      </div>
+    </div>
+
+    <!-- 2017 nicotine pair housing -->
+    <div class="pub-item reveal" data-topic="nicotine" data-author="co" data-paperid="d3e4f5a6b7c8d9e0f1a2b3c4d5e6f7a8b9c0d1e2">
+      <div class="pub-year">2017</div>
+      <div class="pub-main">
+        <div class="pub-title">Differential effects of pair housing on voluntary nicotine consumption: a comparison between male and female adolescent rats</div>
+        <div class="pub-authors">Lee, H., <strong>Jang, M.</strong>, Kim, W., &amp; Noh, J.</div>
+        <div class="pub-journal">Psychopharmacology, 234(16), 2463–2473 <span class="cite-count"></span></div>
+      </div>
+    </div>
+
+    <!-- 2017 nicotine oxytocin -->
+    <div class="pub-item reveal" data-topic="nicotine" data-author="co" data-paperid="e4f5a6b7c8d9e0f1a2b3c4d5e6f7a8b9c0d1e2f3">
+      <div class="pub-year">2017</div>
+      <div class="pub-main">
+        <div class="pub-title">Oxytocin attenuates aversive response to nicotine and anxiety-like behavior in adolescent rats</div>
+        <div class="pub-authors">Lee, H., <strong>Jang, M.</strong>, &amp; Noh, J.</div>
+        <div class="pub-journal">Neuroscience Research, 115, 29–36 <span class="cite-count"></span></div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- METHODS -->
+<section id="methods">
+  <div class="section-tag">Technical Expertise</div>
+  <h2 class="section-title">Methods &amp; Techniques</h2>
+  <p class="section-subtitle">A diverse toolkit spanning in vitro, in vivo, imaging, and behavioral approaches.</p>
+
+  <div class="methods-grid">
+    <div class="method-card reveal">
+      <div class="method-icon">💡</div>
+      <div class="method-name">Optogenetics</div>
+      <div class="method-area">Circuit Manipulation</div>
+    </div>
+    <div class="method-card reveal">
+      <div class="method-icon">🟢</div>
+      <div class="method-name">Calcium Imaging</div>
+      <div class="method-area">In Vivo Imaging</div>
+    </div>
+    <div class="method-card reveal">
+      <div class="method-icon">⚡</div>
+      <div class="method-name">Ex Vivo Electrophysiology</div>
+      <div class="method-area">Neural Recording</div>
+    </div>
+    <div class="method-card reveal">
+      <div class="method-icon">🔍</div>
+      <div class="method-name">Immunohistology</div>
+      <div class="method-area">Histology</div>
+    </div>
+    <div class="method-card reveal">
+      <div class="method-icon">🎯</div>
+      <div class="method-name">Stereotaxic Surgery</div>
+      <div class="method-area">Surgical Technique</div>
+    </div>
+    <div class="method-card reveal">
+      <div class="method-icon">🔭</div>
+      <div class="method-name">Light-Sheet Fluorescence Microscopy</div>
+      <div class="method-area">Advanced Imaging</div>
+    </div>
+    <div class="method-card reveal">
+      <div class="method-icon">🐭</div>
+      <div class="method-name">Rodent Behavior Assays</div>
+      <div class="method-area">Behavioral Science</div>
+    </div>
+    <div class="method-card reveal">
+      <div class="method-icon">💉</div>
+      <div class="method-name">Viral Vector Delivery</div>
+      <div class="method-area">Molecular Tools</div>
+    </div>
+  </div>
+</section>
+
+<!-- CAREER -->
+<section id="career">
+  <div class="section-tag">Career</div>
+  <h2 class="section-title">Academic Journey</h2>
+  <p class="section-subtitle" style="margin-bottom:2.5rem;">From graduate studies to postdoctoral research at Duke.</p>
+
+  <div class="timeline">
+    <div class="tl-item reveal">
+      <div class="tl-dot"></div>
+      <div class="tl-date">April 2025 – Present</div>
+      <div class="tl-role">Postdoctoral Associate</div>
+      <div class="tl-place">Tim Dunn Lab · Department of Biomedical Engineering · Duke University<br>
+        <span style="color:var(--accent2); font-size:.83rem;">Focus: ASD, social enrichment, neural circuit mechanisms</span>
+      </div>
+    </div>
+    <div class="tl-item reveal">
+      <div class="tl-dot" style="background:var(--accent2);"></div>
+      <div class="tl-date">Postdoctoral Research · Chen Lab</div>
+      <div class="tl-role">Postdoctoral Research</div>
+      <div class="tl-place">Chen Lab · Duke University<br>
+        <span style="color:var(--accent2); font-size:.83rem;">Focus: Pain neuroscience, migraine, psoriatic itch, orofacial pain circuits</span>
+      </div>
+    </div>
+    <div class="tl-item reveal">
+      <div class="tl-dot" style="background:var(--accent4);"></div>
+      <div class="tl-date">Ph.D. Research · Noh Lab</div>
+      <div class="tl-role">Doctoral Research</div>
+      <div class="tl-place">Noh Lab<br>
+        <span style="color:var(--accent2); font-size:.83rem;">Focus: mPFC, oxytocin, fear memory, adolescent social &amp; emotional behavior</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact">
+  <div class="section-tag">Get in Touch</div>
+  <h2 class="section-title">Contact</h2>
+  <p class="section-subtitle" style="margin: 0 auto 1rem; text-align:center;">
+    Open to collaborations, questions about my research, and scientific discussions.
+  </p>
+  <div class="contact-links">
+    <a href="mailto:minji.jang@duke.edu" class="contact-link">
+      <span>✉</span> minji.jang@duke.edu
+    </a>
+    <a href="http://www.linkedin.com/in/minjijang9401" class="contact-link" target="_blank">
+      <span>🔗</span> LinkedIn
+    </a>
+    <a href="https://sites.google.com/view/minjijang-94/curriculum-vitae" class="contact-link" target="_blank">
+      <span>📄</span> Full CV
+    </a>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <span>© 2025 Minji Jang · Duke University · Department of Biomedical Engineering</span>
+  <span style="color:var(--border);">Built for science ·&nbsp;</span>
+</footer>
+
+<script>
+  // Filter publications
+  function filterPubs(topic, btn) {
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    if (btn) btn.classList.add('active');
+    document.querySelectorAll('.pub-item').forEach(item => {
+      let show = false;
+      if (topic === 'all') show = true;
+      else if (topic === 'first') show = item.dataset.author === 'first';
+      else show = item.dataset.topic === topic;
+      item.style.display = show ? '' : 'none';
+    });
+  }
+
+  // Auto-fetch citation counts from Semantic Scholar
+  async function fetchCitations() {
+    // Search by title for each paper with a cite-count span
+    const items = document.querySelectorAll('.pub-item[data-paperid]');
+    // collect paper IDs
+    const paperIds = Array.from(items).map(el => el.dataset.paperid).filter(Boolean);
+    if (!paperIds.length) return;
+
+    // Use Semantic Scholar batch API — search by title instead since IDs need verification
+    // We'll search by title for reliability
+    const titledItems = document.querySelectorAll('.pub-item');
+    for (const item of titledItems) {
+      const citeSpan = item.querySelector('.cite-count');
+      if (!citeSpan) continue;
+      const titleEl = item.querySelector('.pub-title');
+      if (!titleEl) continue;
+      const title = titleEl.textContent.trim();
+
+      try {
+        const res = await fetch(
+          `https://api.semanticscholar.org/graph/v1/paper/search?query=${encodeURIComponent(title)}&fields=citationCount,title&limit=1`
+        );
+        if (!res.ok) continue;
+        const data = await res.json();
+        if (data.data && data.data.length > 0) {
+          const count = data.data[0].citationCount;
+          if (count !== undefined) {
+            citeSpan.textContent = `· Cited by ${count}`;
+            citeSpan.style.color = 'var(--muted)';
+            citeSpan.style.fontSize = '.8rem';
+          }
+        }
+      } catch(e) {
+        // silently skip if API fails
+      }
+      // small delay to avoid rate limiting
+      await new Promise(r => setTimeout(r, 300));
+    }
+  }
+
+  // Scroll reveal
+  const obs = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('visible'); });
+  }, { threshold: 0.1 });
+  document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+
+  // Fetch citations on load
+  fetchCitations();
+</script>
+</body>
+</html>
